@@ -11,7 +11,7 @@ import ObjectMapper
 struct WeatherForecast {
     var nameCity: String
     var dayForecast: Int
-    var WeatherForecastDatas: [WeatherForecastData] = []
+    var weatherForecastDatas: [WeatherForecastData] = []
 }
 
 extension WeatherForecast: Mappable {
@@ -23,6 +23,6 @@ extension WeatherForecast: Mappable {
     mutating func mapping(map: Map) {
         nameCity <- map["city.name"]
         dayForecast <- map["cnt"]
-        WeatherForecastDatas <- map["list"]
+        weatherForecastDatas <- map["list"]
     }
 }
