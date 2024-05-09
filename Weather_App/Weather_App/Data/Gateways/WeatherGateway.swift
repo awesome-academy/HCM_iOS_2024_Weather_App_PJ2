@@ -18,9 +18,11 @@ protocol WeatherGatewayType {
     func fetchWeatherCurrentEntities(predicate: NSPredicate?) -> Observable<[WeatherCurrentEntity]>
     func saveWeatherCurrentEntity(entity: WeatherCurrentEntity) -> Observable<Void>
     func deleteWeatherCurrentEntity(entity: WeatherCurrentEntity) -> Observable<Void>
+    func deleteAllWeatherCurrent(entity: WeatherCurrentEntity) -> Observable<Void>
     func fetchWeatherForecastEntities(predicate: NSPredicate?) -> Observable<[WeatherForecastEntity]>
     func saveWeatherForecastEntity(entity: WeatherForecastEntity) -> Observable<Void>
     func deleteWeatherForecastEntity(entity: WeatherForecastEntity) -> Observable<Void>
+    func deleteAllWeatherForecast(entity: WeatherForecastEntity) -> Observable<Void>
 }
 
 struct WeatherGateway : WeatherGatewayType {
@@ -54,6 +56,10 @@ struct WeatherGateway : WeatherGatewayType {
         return CoreDataService.shared.deleteEntity(entity: entity)
     }
     
+    func deleteAllWeatherCurrent(entity: WeatherCurrentEntity) -> Observable<Void> {
+        return CoreDataService.shared.deleteAll(entity: entity)
+    }
+    
     func fetchWeatherForecastEntities(predicate: NSPredicate? = nil) -> Observable<[WeatherForecastEntity]> {
         return CoreDataService.shared.fetchEntities(predicate: predicate)
     }
@@ -64,5 +70,9 @@ struct WeatherGateway : WeatherGatewayType {
     
     func deleteWeatherForecastEntity(entity: WeatherForecastEntity) -> Observable<Void> {
         return CoreDataService.shared.deleteEntity(entity: entity)
+    }
+    
+    func deleteAllWeatherForecast(entity: WeatherForecastEntity) -> Observable<Void> {
+        return CoreDataService.shared.deleteAll(entity: entity)
     }
 }

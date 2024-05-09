@@ -37,6 +37,6 @@ extension MapAssembler where Self: DefaultAssembler {
     }
 
     func resolve() -> MapUseCaseType {
-        return MapUseCase()
+        return MapUseCase(weatherGateway: resolve())
     }
 }

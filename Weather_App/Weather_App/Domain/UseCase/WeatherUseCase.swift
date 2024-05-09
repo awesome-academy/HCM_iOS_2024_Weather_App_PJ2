@@ -10,7 +10,7 @@ import RxSwift
 import CoreData
 
 protocol WeatherUseCase {
-    var weatherGateway: WeatherGateway { get }
+    var weatherGateway: WeatherGatewayType { get }
 }
 
 // MARK: - Get Data from API
@@ -82,7 +82,11 @@ extension WeatherUseCase {
         let predicate = NSPredicate(format: "isFavorite == false AND userLocation == true")
         return weatherGateway.fetchWeatherCurrentEntities(predicate: predicate)
             .flatMap { entities -> Observable<Void> in
-                Observable.from(entities.map { weatherGateway.deleteWeatherCurrentEntity(entity: $0) }).merge()
+                if (entities.isEmpty) {
+                    return Observable.just(())
+                } else {
+                    return Observable.from(entities.map { weatherGateway.deleteAllWeatherCurrent(entity: $0) }).merge()
+                }
             }
     }
     
@@ -90,7 +94,11 @@ extension WeatherUseCase {
         let predicate = NSPredicate(format: "isFavorite == false AND userLocation == false")
         return weatherGateway.fetchWeatherCurrentEntities(predicate: predicate)
             .flatMap { entities -> Observable<Void> in
-                Observable.from(entities.map { weatherGateway.deleteWeatherCurrentEntity(entity: $0) }).merge()
+                if (entities.isEmpty) {
+                    return Observable.just(())
+                } else {
+                    return Observable.from(entities.map { weatherGateway.deleteAllWeatherCurrent(entity: $0) }).merge()
+                }
             }
     }
 }
@@ -152,7 +160,11 @@ extension WeatherUseCase {
         let predicate = NSPredicate(format: "isFavorite == false AND userLocation == true")
         return weatherGateway.fetchWeatherForecastEntities(predicate: predicate)
             .flatMap { entities -> Observable<Void> in
-                Observable.from(entities.map { weatherGateway.deleteWeatherForecastEntity(entity: $0) }).merge()
+                if (entities.isEmpty) {
+                    return Observable.just(())
+                } else {
+                    return Observable.from(entities.map { weatherGateway.deleteAllWeatherForecast(entity: $0) }).merge()
+                }
             }
     }
     
@@ -160,7 +172,11 @@ extension WeatherUseCase {
         let predicate = NSPredicate(format: "isFavorite == false AND userLocation == false")
         return weatherGateway.fetchWeatherForecastEntities(predicate: predicate)
             .flatMap { entities -> Observable<Void> in
-                Observable.from(entities.map { weatherGateway.deleteWeatherForecastEntity(entity: $0) }).merge()
+                if (entities.isEmpty) {
+                    return Observable.just(())
+                } else {
+                    return Observable.from(entities.map { weatherGateway.deleteAllWeatherForecast(entity: $0) }).merge()
+                }
             }
     }
 }

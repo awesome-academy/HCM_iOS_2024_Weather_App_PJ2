@@ -6,7 +6,6 @@
 //
 
 import Foundation
-
 import RxSwift
 import RxCocoa
 import UIKit
@@ -20,19 +19,111 @@ struct MapViewModel {
 extension MapViewModel: ViewModelType {
     struct Input {
         let getCurrentLocationTrigger: Driver<Void>
+        let getWeatherCurrentTrigger: Driver<(latitude: Double, longitude: Double, statusUserLocation: Bool)>
+        let getFavoriteStatusTrigger: Driver<Void>
+        let getFavoriteStatusTriggerUpdated: Driver<Void>
+        let updateStatusButtonTrigger: Driver<Void>
     }
     
     struct Output {
         let currentLocation: Driver<CLLocation>
+        let weatherCurrentData: Driver<WeatherCurrentEntity?>
+        let statusFavorite: Driver<Bool>
+        let statusFavoriteUpdated: Driver<Bool>
     }
-
+    
     func transform(input: Input, disposeBag: DisposeBag) -> Output {
+        var nameCity = ""
+        var statusFavorite = false
+        let errorTracker = ErrorTracker()
+        let activityIndicator = ActivityIndicator()
+        
         let currentLocation = input.getCurrentLocationTrigger
             .flatMapLatest {
                 return LocationManager.shared.getCurrentLocation()
-                    .asDriver(onErrorJustReturn: CLLocation())
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
             }
         
-        return Output(currentLocation: currentLocation)
+        let getWeatherData = input.getWeatherCurrentTrigger
+            .flatMapLatest { (latitude, longitude, statusUserLocation) -> Driver<(WeatherCurrent, Bool)> in
+                return self.useCase.getWeatherCurrentData(latitude: latitude, longitude: longitude)
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+                    .map { weatherData in
+                        return (weatherData, statusUserLocation)
+                    }
+            }
+        
+        let deleteSuccess = getWeatherData
+            .flatMapLatest { weatherData, statusUserLocation in
+                self.useCase.deleteUserLocationDuplicate()
+                    .map { (weatherData, statusUserLocation) }
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+            }
+        
+        let saveSuccess = deleteSuccess
+            .flatMapLatest { weatherData, statusUserLocation in
+                self.useCase.saveWeatherCurrent(weatherCurrent: weatherData)
+                    .map { (weatherData, statusUserLocation) }
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+            }
+        
+        let updateSuccess = saveSuccess
+            .flatMapLatest { weatherData, statusUserLocation in
+                self.useCase.updateUserLocationStatus(for: weatherData.nameCity, userLocation: statusUserLocation)
+                    .map { weatherData }
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+            }
+        
+        let weatherCurrentData = updateSuccess
+            .flatMapLatest { weatherData in
+                nameCity = weatherData.nameCity
+                return self.useCase.fetchCityWeatherCurrent(forCity: weatherData.nameCity)
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+            }
+        
+        let getStatusFavorite = updateSuccess
+            .flatMapLatest { weatherData in
+                let cityName = weatherData.nameCity
+                return self.useCase.fetchCityWeatherCurrent(forCity: cityName)
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+                    .map { weatherCurrentEntity -> Bool in
+                        guard let isFavorite = weatherCurrentEntity?.isFavorite else {
+                            return false
+                        }
+                        statusFavorite = isFavorite
+                        return isFavorite
+                    }
+            }
+        
+        let getStatusFavoriteUpdated = input.updateStatusButtonTrigger
+            .flatMapLatest {
+                statusFavorite.toggle()
+                return self.useCase.updateFavoriteStatus(for: nameCity, isFavorite: statusFavorite)
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+                    .map { statusFavorite }
+            }
+        
+        return Output(
+            currentLocation: currentLocation,
+            weatherCurrentData: weatherCurrentData,
+            statusFavorite: getStatusFavorite,
+            statusFavoriteUpdated: getStatusFavoriteUpdated
+        )
     }
 }
