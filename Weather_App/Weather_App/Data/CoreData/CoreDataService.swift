@@ -78,4 +78,25 @@ final class CoreDataService {
             return Disposables.create()
         }
     }
+    
+    func deleteAll<T: NSManagedObject>(entity: T) -> Observable<Void> {
+        let context = self.persistentContainer.viewContext
+        return Observable.create { observer in
+            let fetchRequest: NSFetchRequest<T> = NSFetchRequest(entityName: String(describing: T.self))
+            do {
+                let entities = try context.fetch(fetchRequest)
+                for entity in entities {
+                    context.delete(entity)
+                }
+                try context.save()
+                observer.onNext(())
+                observer.onCompleted()
+                print("All entities deleted successfully")
+            } catch {
+                observer.onError(error)
+                print("Failed to delete all entities ")
+            }
+            return Disposables.create()
+        }
+    }
 }

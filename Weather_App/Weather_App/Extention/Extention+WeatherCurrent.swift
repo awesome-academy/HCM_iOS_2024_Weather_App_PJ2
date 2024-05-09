@@ -12,18 +12,20 @@ import Then
 extension WeatherCurrent {
     func map(from objectContext: NSManagedObjectContext) -> WeatherCurrentEntity {
         return WeatherCurrentEntity(context: objectContext).then {
+            $0.isFavorite = false
+            $0.userLocation = false
             $0.latitude = latitude
             $0.longitude = longitude
             $0.nameCity = nameCity
             $0.temperature = temperature
             $0.descriptionStatus = description
             $0.weatherIcon = weatherIcon
-            $0.humidity = Int16(humidity)
-            $0.clouds = Int16(clouds)
+            $0.humidity = Int64(humidity)
+            $0.clouds = Int64(clouds)
             $0.windSpeed = windSpeed
-            $0.dateTime = Int16(dateTime)
-            $0.timeOfSunrise = Int16(timeOfSunrise)
-            $0.timeOfSunset = Int16(timeOfSunset)
+            $0.dateTime = Int64(dateTime)
+            $0.timeOfSunrise = Int64(timeOfSunrise)
+            $0.timeOfSunset = Int64(timeOfSunset)
         }
     }
 }

@@ -6,9 +6,21 @@
 //
 
 import Foundation
+import RxSwift
 
 protocol AppUseCaseType {
+    func deleteEntitiesNotUseWeatherCurrent() -> Observable<Void>
+    func deleteEntitiesNotUseWeatherForecast() -> Observable<Void>
 }
 
-struct AppUseCase: AppUseCaseType {
+struct AppUseCase: AppUseCaseType, WeatherUseCase {
+    var weatherGateway: WeatherGatewayType
+    
+    func deleteWeatherCurrent() -> Observable<Void> {
+        return deleteEntitiesNotUseWeatherCurrent()
+    }
+    
+    func deleteWeatherForecast() -> Observable<Void> {
+        return deleteEntitiesNotUseWeatherForecast()
+    }
 }

@@ -17,15 +17,30 @@ struct AppViewModel {
 extension AppViewModel: ViewModelType {
     struct Input {
         let loadTrigger: Driver<Void>
+        let deleteWeatherCurrentTrigger: Driver<Void>
     }
-
+    
     struct Output {
     }
-
+    
     func transform(input: AppViewModel.Input, disposeBag: DisposeBag) -> Output {
+        let errorTracker = ErrorTracker()
+        let activityIndicator = ActivityIndicator()
+        
         let toMain = input.loadTrigger
             .drive(onNext: navigator.toMain)
             .disposed(by: disposeBag)
+        
+        input.deleteWeatherCurrentTrigger
+            .flatMapLatest {
+                return self.useCase.deleteEntitiesNotUseWeatherCurrent()
+                    .trackError(errorTracker)
+                    .trackIndicator(activityIndicator)
+                    .asDriverOnErrorJustComplete()
+            }
+            .drive()
+            .disposed(by: disposeBag)
+        
         return Output()
     }
 }

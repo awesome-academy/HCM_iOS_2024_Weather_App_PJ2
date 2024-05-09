@@ -12,7 +12,8 @@ protocol Assembler: AnyObject,
                     TabbarAssembler,
                     MapAssembler,
                     DetailAssembler,
-                    FavoriteAssembler {
+                    FavoriteAssembler,
+                    GatewaysAssembler {
 }
 
 final class DefaultAssembler: Assembler {
