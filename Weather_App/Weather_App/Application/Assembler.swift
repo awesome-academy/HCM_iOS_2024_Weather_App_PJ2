@@ -13,6 +13,8 @@ protocol Assembler: AnyObject,
                     MapAssembler,
                     DetailAssembler,
                     FavoriteAssembler,
+                    SearchAssembler,
+                    RepositoryAssembler,
                     GatewaysAssembler {
 }
 

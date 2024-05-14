@@ -23,6 +23,7 @@ extension MapViewModel: ViewModelType {
         let getFavoriteStatusTrigger: Driver<Void>
         let getFavoriteStatusTriggerUpdated: Driver<Void>
         let updateStatusButtonTrigger: Driver<Void>
+        let getSearchTextTrigger: Driver<String>
     }
     
     struct Output {
@@ -30,11 +31,13 @@ extension MapViewModel: ViewModelType {
         let weatherCurrentData: Driver<WeatherCurrentEntity?>
         let statusFavorite: Driver<Bool>
         let statusFavoriteUpdated: Driver<Bool>
+        let locationResult: Driver<CLLocation>
     }
     
     func transform(input: Input, disposeBag: DisposeBag) -> Output {
         var nameCity = ""
         var statusFavorite = false
+        let locationUpdated = PublishSubject<CLLocation>()
         let errorTracker = ErrorTracker()
         let activityIndicator = ActivityIndicator()
         
@@ -119,11 +122,21 @@ extension MapViewModel: ViewModelType {
                     .map { statusFavorite }
             }
         
+        input.getSearchTextTrigger
+            .flatMapLatest{ searchText in
+                navigator.toSearchViewController(searchText: searchText)
+            }
+            .drive(onNext: { location in
+                locationUpdated.onNext(location)
+            })
+            .disposed(by: disposeBag)
+        
         return Output(
             currentLocation: currentLocation,
             weatherCurrentData: weatherCurrentData,
             statusFavorite: getStatusFavorite,
-            statusFavoriteUpdated: getStatusFavoriteUpdated
+            statusFavoriteUpdated: getStatusFavoriteUpdated,
+            locationResult: locationUpdated.asDriverOnErrorJustComplete()
         )
     }
 }
