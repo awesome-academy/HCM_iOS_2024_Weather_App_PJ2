@@ -55,7 +55,11 @@ extension MapViewController: Bindable {
             getWeatherCurrentTrigger: getWeatherCurrentTrigger.asDriverOnErrorJustComplete(),
             getFavoriteStatusTrigger: Driver.just(()),
             getFavoriteStatusTriggerUpdated: Driver.just(()),
-            updateStatusButtonTrigger: favoriteButton.rx.tap.asDriverOnErrorJustComplete()
+            updateStatusButtonTrigger: favoriteButton.rx.tap.asDriverOnErrorJustComplete(),
+            getSearchTextTrigger: searchController.searchBar.rx.searchButtonClicked
+                .withLatestFrom(searchController.searchBar.rx.text.orEmpty)
+                .filter { !$0.isEmpty }
+                .asDriverOnErrorJustComplete()
         )
         
         let output = viewModel.transform(input: input, disposeBag: disposeBag)
@@ -74,6 +78,10 @@ extension MapViewController: Bindable {
         
         output.statusFavoriteUpdated
             .drive(statusFavoriteUpdateBinder)
+            .disposed(by: disposeBag)
+        
+        output.locationResult
+            .drive(locationUpdateBinder)
             .disposed(by: disposeBag)
     }
 }
