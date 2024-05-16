@@ -9,24 +9,25 @@ import Foundation
 import UIKit
 
 protocol DetailAssembler {
-    func resolve(navigationController: UINavigationController) -> DetailViewController
-    func resolve(navigationController: UINavigationController) -> DetailViewModel
+    func resolve(navigationController: UINavigationController, weatherCurrentEntity: WeatherCurrentEntity) -> DetailViewController
+    func resolve(navigationController: UINavigationController, weatherCurrentEntity: WeatherCurrentEntity) -> DetailViewModel
     func resolve(navigationController: UINavigationController) -> DetailNavigatorType
     func resolve() -> DetailUseCaseType
 }
 
 extension DetailAssembler {
-    func resolve(navigationController: UINavigationController) -> DetailViewController {
+    func resolve(navigationController: UINavigationController, weatherCurrentEntity: WeatherCurrentEntity) -> DetailViewController {
         let viewController = DetailViewController()
-        let viewModel: DetailViewModel = resolve(navigationController: navigationController)
+        let viewModel: DetailViewModel = resolve(navigationController: navigationController, weatherCurrentEntity: weatherCurrentEntity)
         viewController.bindViewModel(to: viewModel)
         return viewController
     }
 
-    func resolve(navigationController: UINavigationController) -> DetailViewModel {
+    func resolve(navigationController: UINavigationController, weatherCurrentEntity: WeatherCurrentEntity) -> DetailViewModel {
         return DetailViewModel(
             navigator: resolve(navigationController: navigationController),
-            useCase: resolve()
+            useCase: resolve(),  
+            weatherCurrentEntity: weatherCurrentEntity
         )
     }
 }
@@ -37,6 +38,6 @@ extension DetailAssembler where Self: DefaultAssembler {
     }
 
     func resolve() -> DetailUseCaseType {
-        return DetailUseCase()
+        return DetailUseCase(weatherGateway: resolve())
     }
 }

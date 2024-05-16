@@ -20,6 +20,7 @@ final class MapViewController: UIViewController {
     @IBOutlet weak private var nameCityLabel: UILabel!
     @IBOutlet weak private var temperatureLabel: UILabel!
     @IBOutlet weak private var favoriteButton: UIButton!
+    @IBOutlet weak private var detailButton: UIButton!
     
     private var searchController = UISearchController()
     private let locationManager = LocationManager.shared
@@ -59,7 +60,8 @@ extension MapViewController: Bindable {
             getSearchTextTrigger: searchController.searchBar.rx.searchButtonClicked
                 .withLatestFrom(searchController.searchBar.rx.text.orEmpty)
                 .filter { !$0.isEmpty }
-                .asDriverOnErrorJustComplete()
+                .asDriverOnErrorJustComplete(), 
+            getDetailWeatherTrigger: detailButton.rx.tap.asDriverOnErrorJustComplete()
         )
         
         let output = viewModel.transform(input: input, disposeBag: disposeBag)

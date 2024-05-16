@@ -16,6 +16,7 @@ target 'Weather_App' do
     	pod 'Then', '3.0.0'
 	pod 'Localize-Swift', '~> 3.2'
 	pod 'SwiftGen', '6.6.3'
+	pod 'RxGesture', '4.0.4'
 
   target 'Weather_AppTests' do
     inherit! :search_paths

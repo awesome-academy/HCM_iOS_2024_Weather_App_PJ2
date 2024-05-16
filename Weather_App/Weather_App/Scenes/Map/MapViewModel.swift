@@ -24,6 +24,7 @@ extension MapViewModel: ViewModelType {
         let getFavoriteStatusTriggerUpdated: Driver<Void>
         let updateStatusButtonTrigger: Driver<Void>
         let getSearchTextTrigger: Driver<String>
+        let getDetailWeatherTrigger: Driver<Void>
     }
     
     struct Output {
@@ -38,6 +39,7 @@ extension MapViewModel: ViewModelType {
         var nameCity = ""
         var statusFavorite = false
         let locationUpdated = PublishSubject<CLLocation>()
+        
         let errorTracker = ErrorTracker()
         let activityIndicator = ActivityIndicator()
         
@@ -129,6 +131,12 @@ extension MapViewModel: ViewModelType {
             .drive(onNext: { location in
                 locationUpdated.onNext(location)
             })
+            .disposed(by: disposeBag)
+        
+        input.getDetailWeatherTrigger
+            .withLatestFrom(weatherCurrentData)
+            .compactMap { $0 }
+            .drive(onNext: { navigator.toWeatherDetailViewController(weatherCurrentEntity: $0)})
             .disposed(by: disposeBag)
         
         return Output(
