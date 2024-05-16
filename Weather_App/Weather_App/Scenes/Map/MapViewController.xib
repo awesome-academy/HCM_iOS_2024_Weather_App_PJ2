@@ -12,6 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MapViewController" customModule="Weather_App" customModuleProvider="target">
             <connections>
+                <outlet property="detailButton" destination="6kX-rg-6Q4" id="Obb-f5-m4d"/>
                 <outlet property="favoriteButton" destination="6Ps-xi-ZLX" id="Fo4-Un-WHP"/>
                 <outlet property="mapView" destination="cIH-WN-Xn9" id="NMB-SX-aq5"/>
                 <outlet property="nameCityLabel" destination="MnS-9Y-ZtI" id="GiY-Ws-UpK"/>
@@ -138,6 +139,15 @@
                     <state key="normal" title="Button"/>
                     <buttonConfiguration key="configuration" style="filled" image="arrow.clockwise.circle.fill" catalog="system" title=""/>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6kX-rg-6Q4">
+                    <rect key="frame" x="278" y="633" width="100" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="100" id="53R-EN-h3p"/>
+                        <constraint firstAttribute="height" constant="40" id="TTb-Gx-MKY"/>
+                    </constraints>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="filled" title="Detail"/>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -145,7 +155,9 @@
                 <constraint firstItem="QBc-8c-cno" firstAttribute="top" secondItem="v3t-qh-3Tq" secondAttribute="bottom" constant="20" id="4p6-nv-weJ"/>
                 <constraint firstItem="cIH-WN-Xn9" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="9op-6B-ffm"/>
                 <constraint firstItem="BdE-8P-5GS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="DbJ-mm-hb6"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="6kX-rg-6Q4" secondAttribute="trailing" constant="15" id="Hhw-F7-PQK"/>
                 <constraint firstItem="lx8-oP-aP9" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="15" id="Lbo-9d-1h6"/>
+                <constraint firstItem="lx8-oP-aP9" firstAttribute="top" secondItem="6kX-rg-6Q4" secondAttribute="bottom" constant="5" id="LhW-dO-lc6"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="v3t-qh-3Tq" secondAttribute="trailing" constant="8" id="OLo-Qo-Ifh"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="lx8-oP-aP9" secondAttribute="trailing" constant="15" id="OR5-nE-r5o"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="cIH-WN-Xn9" secondAttribute="trailing" id="SgY-E6-BOj"/>

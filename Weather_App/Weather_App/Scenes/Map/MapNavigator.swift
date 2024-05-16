@@ -13,6 +13,7 @@ import RxCocoa
 
 protocol MapNavigatorType {
     func toSearchViewController(searchText: String) -> Driver<CLLocation>
+    func toWeatherDetailViewController(weatherCurrentEntity: WeatherCurrentEntity)
 }
 
 struct MapNavigator: MapNavigatorType {
@@ -21,8 +22,16 @@ struct MapNavigator: MapNavigatorType {
     
     func toSearchViewController(searchText: String) -> Driver<CLLocation> {
         let delegate = PublishSubject<CLLocation>()
-        let vc: SearchViewController = assembler.resolve(navigationController: navigationController, searchText: searchText, location: delegate)
+        let vc: SearchViewController = assembler.resolve(navigationController: navigationController, 
+                                                         searchText: searchText,
+                                                         location: delegate)
         navigationController.present(vc, animated: true)
         return delegate.asDriverOnErrorJustComplete()
+    }
+    
+    func toWeatherDetailViewController(weatherCurrentEntity: WeatherCurrentEntity) {
+        let vc: DetailViewController = assembler.resolve(navigationController: navigationController,
+                                                         weatherCurrentEntity: weatherCurrentEntity)
+        navigationController.pushViewController(vc, animated: true)
     }
 }

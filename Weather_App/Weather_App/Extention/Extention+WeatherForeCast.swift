@@ -29,4 +29,5 @@ extension WeatherForecast {
         weatherForecastEntity.weatherforecastdata = NSSet(array: weatherForecastDataEntities)
         return weatherForecastEntity
     }
+    
 }
